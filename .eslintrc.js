@@ -31,6 +31,9 @@ module.exports = {
                 extensions: ['.jsx', '.js']
             }
         ],
-        'import/prefer-default-export': 'off'
+        'import/prefer-default-export': 'off',
+        'react/state-in-constructor': 'off',
+        'react/destructuring-assignment': 'off',
+        'react/no-unused-state': 'off'
     },
 };
