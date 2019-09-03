@@ -4,7 +4,8 @@ import PropTypes from 'prop-types';
 import { FaSpinner, FaArrowLeft } from 'react-icons/fa';
 
 import Container from '../../components/Container';
-import { LoadingContainer, Loading, Owner } from './styles';
+import { LoadingContainer, Loading, Owner, IssueList } from './styles';
+import Colors from '../../styles/constants';
 
 import api from '../../services/api';
 
@@ -60,7 +61,7 @@ export default class Repository extends Component {
         return (
             <Container>
                 <Link to="/">
-                    <FaArrowLeft color="#042f4b" fontSize="20" />
+                    <FaArrowLeft color={Colors.primaryColor} fontSize="20" />
                 </Link>
                 <Owner>
                     <img
@@ -71,6 +72,30 @@ export default class Repository extends Component {
                     <h1>{repository.name}</h1>
                     <p>{repository.description}</p>
                 </Owner>
+
+                <IssueList>
+                    {issues.map(issue => (
+                        <li key={String(issue.id)}>
+                            <img
+                                src={issue.user.avatar_url}
+                                alt={issue.user.login}
+                            />
+                            <div>
+                                <strong>
+                                    <a href={issue.html_url} target="blank">
+                                        {issue.title}
+                                    </a>
+                                    {issue.labels.map(label => (
+                                        <span key={String(label.id)}>
+                                            {label.name}
+                                        </span>
+                                    ))}
+                                </strong>
+                                <p>{issue.user.login}</p>
+                            </div>
+                        </li>
+                    ))}
+                </IssueList>
             </Container>
         );
     }
