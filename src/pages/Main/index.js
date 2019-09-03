@@ -11,7 +11,8 @@ export default class Main extends Component {
     state = {
         newRepo: '',
         repositories: [],
-        loading: false
+        loading: false,
+        invalid: false
     };
 
     // Load localStorage data
@@ -32,31 +33,38 @@ export default class Main extends Component {
     }
 
     handleSubmit = async e => {
-        e.preventDefault();
+        try {
+            e.preventDefault();
 
-        this.setState({ loading: true });
+            const { newRepo, repositories } = this.state;
 
-        const { newRepo, repositories } = this.state;
+            if (!newRepo) return;
 
-        const response = await api.get(`/repos/${newRepo}`);
+            this.setState({ loading: true, invalid: false });
 
-        const data = {
-            name: response.data.full_name
-        };
+            const response = await api.get(`/repos/${newRepo}`);
 
-        this.setState({
-            repositories: [...repositories, data],
-            newRepo: '',
-            loading: false
-        });
+            const data = {
+                name: response.data.full_name
+            };
+
+            this.setState({
+                repositories: [...repositories, data],
+                newRepo: ''
+            });
+        } catch (err) {
+            this.setState({ invalid: true });
+        } finally {
+            this.setState({ loading: false });
+        }
     };
 
     handleInputChange = e => {
-        this.setState({ newRepo: e.target.value });
+        this.setState({ newRepo: e.target.value, invalid: false });
     };
 
     render() {
-        const { newRepo, loading, repositories } = this.state;
+        const { newRepo, loading, repositories, invalid } = this.state;
 
         return (
             <Container>
@@ -64,7 +72,7 @@ export default class Main extends Component {
                     <FaGithubAlt />
                     Repositories
                 </h1>
-                <Form onSubmit={this.handleSubmit}>
+                <Form onSubmit={this.handleSubmit} invalid={invalid}>
                     <input
                         type="text"
                         placeholder="Add repository"
@@ -75,8 +83,8 @@ export default class Main extends Component {
                         {loading ? (
                             <FaSpinner color="#FFF" size={14} />
                         ) : (
-                                <FaPlus color="#FFF" size={14} />
-                            )}
+                            <FaPlus color="#FFF" size={14} />
+                        )}
                     </SubmitButton>
                 </Form>
 
