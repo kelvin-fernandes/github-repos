@@ -42,6 +42,10 @@ export default class Main extends Component {
 
             this.setState({ loading: true, invalid: false });
 
+            const hasRepository = repositories.find(r => r.name === newRepo);
+
+            if (hasRepository) throw new Error('Duplicated repository');
+
             const response = await api.get(`/repos/${newRepo}`);
 
             const data = {
@@ -79,7 +83,7 @@ export default class Main extends Component {
                         value={newRepo}
                         onChange={this.handleInputChange}
                     />
-                    <SubmitButton loading={loading}>
+                    <SubmitButton loading={loading || undefined}>
                         {loading ? (
                             <FaSpinner color="#FFF" size={14} />
                         ) : (
