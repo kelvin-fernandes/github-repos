@@ -1,4 +1,4 @@
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 import Colors from '../../styles/constants';
 
 const rotate = keyframes`
@@ -59,11 +59,52 @@ export const Owner = styled.div`
     }
 `;
 
+export const IssueFilters = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+
+    button {
+        height: 32px;
+        background: white;
+        border: 1px solid ${Colors.primaryColor};
+        padding: 0 15px;
+        border-radius: 4px;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        &:hover {
+            background: #3a59ae;
+            color: white;
+        }
+
+        & + button {
+            margin-left: 2px;
+        }
+
+        &:nth-child(${props => props.active + 1}) {
+            background: ${Colors.primaryColor};
+            border: 1px solid ${Colors.primaryColor};
+            color: white;
+        }
+    }
+`;
+
 export const IssueList = styled.ul`
-    padding-top: 30px;
-    margin-top: 30px;
+    padding-top: 20px;
+    margin-top: 20px;
     border-top: 1px solid #eee;
     list-style: none;
+
+    ${props =>
+        props.hide &&
+        css`
+            display: none;
+        `}
 
     li {
         display: flex;
