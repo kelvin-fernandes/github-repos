@@ -9,7 +9,8 @@ import {
     Loading,
     Owner,
     IssueFilters,
-    IssueList
+    IssueList,
+    IssuePagination
 } from './styles';
 import Colors from '../../styles/constants';
 
@@ -35,6 +36,7 @@ export default class Repository extends Component {
         ],
         filterIndex: 0,
         hideIssueList: false,
+        page: 1,
         loading: true
     };
 
@@ -43,14 +45,15 @@ export default class Repository extends Component {
 
         const repoName = decodeURIComponent(match.params.repositoryName);
 
-        const { filters } = this.state;
+        const { filters, page } = this.state;
 
         const [repository, issues] = await Promise.all([
             api.get(`/repos/${repoName}`),
             api.get(`/repos/${repoName}/issues`, {
                 params: {
                     state: filters.find(f => f.active).state,
-                    per_page: 5
+                    per_page: 5,
+                    page
                 }
             })
         ]);
@@ -65,23 +68,41 @@ export default class Repository extends Component {
     }
 
     async handleIssueFilter(index) {
-        const { filterIndex, filters } = this.state;
+        const { filterIndex } = this.state;
 
         if (index === filterIndex) return;
 
-        const { repoName } = this.state;
+        await this.setState({ filterIndex: index });
+
+        this.handleIssuePaginate(index);
+    }
+
+    async previousPage() {
+        const { page } = this.state;
+
+        await this.setState({ page: page - 1 });
+        this.handleIssuePaginate();
+    }
+
+    async nextPage() {
+        const { page } = this.state;
+
+        await this.setState({ page: page + 1 });
+        this.handleIssuePaginate();
+    }
+
+    async handleIssuePaginate() {
+        const { repoName, filters, filterIndex, page } = this.state;
 
         const issues = await api.get(`/repos/${repoName}/issues`, {
             params: {
-                state: filters[index].state,
-                per_page: 5
+                state: filters[filterIndex].state,
+                per_page: 5,
+                page
             }
         });
 
-        this.setState({
-            issues: issues.data,
-            filterIndex: index
-        });
+        this.setState({ issues: issues.data });
     }
 
     render() {
@@ -91,7 +112,8 @@ export default class Repository extends Component {
             hideIssueList,
             loading,
             filters,
-            filterIndex
+            filterIndex,
+            page
         } = this.state;
 
         if (loading) {
@@ -152,6 +174,20 @@ export default class Repository extends Component {
                         </li>
                     ))}
                 </IssueList>
+
+                <IssuePagination hide={hideIssueList}>
+                    <button
+                        type="button"
+                        disabled={page < 2}
+                        onClick={() => this.previousPage()}
+                    >
+                        Previous
+                    </button>
+                    <span>Page {page}</span>
+                    <button type="button" onClick={() => this.nextPage()}>
+                        Next
+                    </button>
+                </IssuePagination>
             </Container>
         );
     }

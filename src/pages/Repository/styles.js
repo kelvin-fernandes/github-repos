@@ -160,3 +160,39 @@ export const IssueList = styled.ul`
         }
     }
 `;
+
+export const IssuePagination = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 15px;
+
+    ${props =>
+        props.hide &&
+        css`
+            display: none;
+        `}
+
+    button {
+        height: 32px;
+        background: white;
+        border: 1px solid ${Colors.primaryColor};
+        padding: 0 15px;
+        border-radius: 4px;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        &:hover:enabled {
+            background: #3a59ae;
+            color: white;
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+`;
